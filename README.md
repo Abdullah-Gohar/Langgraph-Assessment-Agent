@@ -2,7 +2,7 @@
 
 A stateful, conversational AI agent that helps teachers create student assessments grounded in a specific curriculum and textbook.
 
-Built with **FastAPI**, **LangGraph**, and **OpenAI**. Ships with a built-in chat interface so you can talk to it immediately in a browser — no Postman, no extra client setup.
+Built with **FastAPI**, **LangGraph**, and **OpenAI**. Ships with a built-in chat interface so you can talk to it immediately in a browser.
 
 ---
 
@@ -13,7 +13,7 @@ The teacher opens the web UI and describes what they want in plain English. The 
 1. Searches 33 curriculum learning outcomes by semantic similarity to find the ones that match the teacher's intent
 2. Presents the matching LOs and lets the teacher select which to include
 3. Retrieves and summarises the relevant textbook content for each selected LO
-4. Lets the teacher approve or reject content — with rejection reasons fed back into a targeted re-retrieval loop
+4. Lets the teacher approve or reject content with rejection reasons fed back into a targeted re-retrieval loop
 5. Generates a formatted markdown assessment (MCQ, short-answer, or both) once content is approved
 
 Every session is persisted to SQLite so a teacher can pause mid-conversation, close the browser, and resume exactly where they left off.
@@ -42,7 +42,7 @@ cp .env.example .env
 # open .env and set your OPENAI_API_KEY
 ```
 
-> **First run note:** the app embeds all 33 LOs and 105 book chunks via the OpenAI embeddings API on startup. This is a one-time cost (a few cents) — results are cached to `data/embeddings_cache.json` and reused on every subsequent run.
+> **First run note:** the app embeds all 33 LOs and 105 book chunks via the OpenAI embeddings API on startup. This is a one-time cost (a few cents), results are cached to `data/embeddings_cache.json` and reused on every subsequent run.
 
 ```bash
 uvicorn app.main:app --reload --port 8000
@@ -54,13 +54,13 @@ Open **http://localhost:8000** in a browser. You'll see the chat interface.
 
 ## Web interface
 
-Navigating to `http://localhost:8000` serves a single-page chat UI directly from the API server — no separate frontend process or build step.
+Navigating to `http://localhost:8000` serves a single-page chat UI directly from the API server, no separate frontend process or build step.
 
 - Type a message and press **Enter** (or click **Send**) to talk to the agent
 - Shift+Enter adds a newline without sending
-- Agent replies render as formatted markdown — headers, bullet lists, code blocks, and inline formatting all display properly
+- Agent replies render as formatted markdown: headers, bullet lists, code blocks, and inline formatting all display properly
 - The **phase badge** in the top-right corner shows where you are in the conversation (`discovery`, `los_offered`, `content_review`, etc.)
-- When the assessment is delivered the input locks and shows a "Session complete" message — refresh the page to start a new session
+- When the assessment is delivered the input locks and shows a "Session complete" message, refresh the page to start a new session
 
 ---
 
@@ -116,8 +116,8 @@ Navigating to `http://localhost:8000` serves a single-page chat UI directly from
 | Layer | Responsibility |
 |-------|---------------|
 | **Browser** | Renders the chat UI, sends messages, renders markdown replies |
-| **API** | FastAPI — one real endpoint (`/answer`) plus static file serving and debug helpers |
-| **Agent** | LangGraph state machine — router + worker nodes, SQLite checkpointer |
+| **API** | FastAPI: one real endpoint (`/answer`) plus static file serving and debug helpers |
+| **Agent** | LangGraph state machine: router + worker nodes, SQLite checkpointer |
 | **Services** | Data loading, semantic retrieval, all OpenAI calls |
 
 ---
@@ -128,12 +128,12 @@ The agent moves through **phases**. The current phase combined with the router's
 
 | Phase | What's happening |
 |-------|-----------------|
-| `start` | First turn — teacher greets or opens |
+| `start` | First turn: teacher greets or opens |
 | `discovery` | Agent waiting for a topic, a student-need description, or "show me everything" |
-| `los_offered` | Candidate LOs shown — teacher selects by ID, subdomain, "all", "first three", etc. |
-| `content_review` | Book-chunk summaries shown — teacher approves or rejects with a reason |
-| `ready_to_generate` | All content approved — teacher specifies format and per-LO question count |
-| `done` | Assessment delivered — session closed |
+| `los_offered` | Candidate LOs shown: teacher selects by ID, subdomain, "all", "first three", etc. |
+| `content_review` | Book-chunk summaries shown: teacher approves or rejects with a reason |
+| `ready_to_generate` | All content approved: teacher specifies format and per-LO question count |
+| `done` | Assessment delivered: session closed |
 
 The router classifies each message into one of eight intents: `greeting`, `discover_topic`, `discover_open`, `select_los`, `approve_content`, `refine_content`, `generate`, `off_topic`.
 
@@ -155,7 +155,7 @@ This loop repeats as many times as needed. Refinement history is recorded in sta
 ```
 assessment_agent/
 ├── app/
-│   ├── main.py               # FastAPI app — /answer endpoint, static file serving
+│   ├── main.py               # FastAPI app: /answer endpoint, static file serving
 │   ├── cli.py                # Interactive CLI for terminal testing
 │   ├── config.py             # Settings from .env
 │   ├── schemas.py            # Pydantic models (LO, Chunk, API I/O)
@@ -163,7 +163,7 @@ assessment_agent/
 │   ├── static/
 │   │   └── index.html        # Single-page chat UI (markdown rendering via marked.js)
 │   ├── agent/
-│   │   ├── state.py          # AgentState TypedDict — the persisted conversation state
+│   │   ├── state.py          # AgentState TypedDict: the persisted conversation state
 │   │   ├── nodes.py          # All worker node implementations
 │   │   └── graph.py          # StateGraph wiring + SqliteSaver factory
 │   └── services/
@@ -173,9 +173,9 @@ assessment_agent/
 ├── data/
 │   ├── LO.xlsx               # 33 learning outcomes across 3 domains
 │   ├── chunks.json           # 105 pre-chunked book excerpts
-│   └── embeddings_cache.json # (generated) cached embeddings — recreated if data changes
+│   └── embeddings_cache.json # (generated) cached embeddings, recreated if data changes
 ├── tests/
-│   └── test_data_loader.py   # Parser tests — no API key needed
+│   └── test_data_loader.py   # Parser tests, no API key needed
 ├── requirements.txt
 ├── .env.example
 └── README.md
@@ -185,7 +185,7 @@ assessment_agent/
 
 ## API reference
 
-All conversation goes through a single endpoint. The web UI and the CLI both call it — the agent's behaviour is identical either way.
+All conversation goes through a single endpoint. The web UI and the CLI both call it and the agent's behaviour is identical either way.
 
 ### `POST /answer`
 
@@ -316,7 +316,7 @@ Creates a fresh session, loops on stdin. Type messages, see replies, watch the p
 
 ### SQLite persistence, not in-memory state
 
-`SqliteSaver` means state survives process restarts. A teacher can close the browser, come back the next day, and resume mid-conversation. For a production deployment, swap in `PostgresSaver` — no other code changes.
+`SqliteSaver` means state survives process restarts. A teacher can close the browser, come back the next day, and resume mid-conversation. For a production deployment, swap in `PostgresSaver`, no other code changes.
 
 ### Embeddings over keyword search
 
