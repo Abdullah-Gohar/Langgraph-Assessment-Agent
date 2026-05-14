@@ -12,6 +12,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from langchain_core.messages import HumanMessage
 
 from app.agent.graph import build_graph, make_checkpointer
@@ -57,10 +59,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 
 @app.get("/", tags=["health"])
 async def root():
-    return {"service": "assessment-agent", "status": "ok"}
+    return RedirectResponse(url="/static/index.html")
 
 
 @app.get("/health", tags=["health"])

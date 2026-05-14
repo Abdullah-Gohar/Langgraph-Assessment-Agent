@@ -56,3 +56,6 @@ class AgentState(TypedDict, total=False):
     # Generation
     generated_questions: list[dict]      # serialized GeneratedQuestion objects
     is_final: bool                        # True once markdown is delivered
+
+    # Internal routing — written by router_node, read by conditional edges only
+    _intent: str

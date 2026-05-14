@@ -10,3 +10,4 @@ venv/
 data/checkpoints.sqlite*
 data/embeddings_cache.json
 .DS_Store
+data
